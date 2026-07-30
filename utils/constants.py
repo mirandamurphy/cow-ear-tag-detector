@@ -1,9 +1,10 @@
-import cv2
 
 # 01_remove_duplicates.py
 P_HASH_THRESHOLD = 10
 
-# 02_remove_blurry_images.py
+# 02_remove_blurry.py
 FOCUS_SCORE_THRESHOLD = 1200
+
+CLASS_LABEL = "0"
 
 
