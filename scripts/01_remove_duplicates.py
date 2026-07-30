@@ -5,7 +5,6 @@ from PIL import Image
 from utils.definitions import RAW_IMAGES_DIR, RAW_LABELS_DIR, INTERIM_IMAGES_DIR, INTERIM_LABELS_DIR
 from utils.constants import P_HASH_THRESHOLD
 
-# Create logger
 logger = logging.getLogger(__name__)
 
 # Converts image to RBG to ensure consist color format and computes perceptual hash
@@ -17,7 +16,7 @@ def compute_perceptual_hashes():
         if path.is_file():
             with Image.open(path) as img:
                 logger.info("Hashing image : %s", path.name)
-                image_hashes[path] = imagehash.phash(img.convert("RBG"))
+                image_hashes[path] = imagehash.phash(img.convert("RGB"))
     return image_hashes
 
 
@@ -40,21 +39,20 @@ def find_unique_images(image_hashes):
 
 def copy_unique_data(kept_images):
 
-    image_names = {path.stem for path in kept_images}
-    label_names = {path for path in RAW_LABELS_DIR.glob("*.txt")}
+    image_stems = {path.stem for path in kept_images}
+    label_stems = {path.stem for path in RAW_LABELS_DIR.glob("*.txt")}
 
-    # File names that have both an image and a label
-    matched_data = image_names.intersection(label_names)
+    matched_stems = image_stems.intersection(label_stems)
 
     # Copy labels that have an image being kept
-    for label_path in RAW_LABELS_DIR:
-        if label_path.stem in matched_data:
+    for label_path in RAW_LABELS_DIR.glob("*.txt"):
+        if label_path.stem in matched_stems:
             shutil.copy2(label_path, INTERIM_LABELS_DIR)
             logger.info("Moved label: %s", label_path.stem)
 
     # Copy images that have a corresponding label
     for image_path in kept_images:
-        if image_path.stem in matched_data:
+        if image_path.stem in matched_stems:
             shutil.copy2(image_path, INTERIM_IMAGES_DIR)
             logger.info("Saved image %s", image_path.stem)
         else:
