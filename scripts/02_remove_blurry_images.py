@@ -1,9 +1,8 @@
 import cv2
 import numpy as np
-import pandas as pd
 import logging
 
-from utils.definitions import INTERIM_IMAGES_DIR
+from utils.definitions import INTERIM_IMAGES_DIR, INTERIM_LABELS_DIR
 from utils.constants import FOCUS_SCORE_THRESHOLD
 
 logger = logging.getLogger(__name__)
@@ -39,16 +38,21 @@ def filter_blurry_images():
     removed_image_count = 0
 
 
-    for path, gray_image in grayscale_images:
+    for image_path, gray_image in grayscale_images:
         focus_score = compute_focus_score(gray_image)
         blurry = focus_score < FOCUS_SCORE_THRESHOLD
-        logger.info("Focus score for %s: %.2f (blurry=%s)", path.name, focus_score, blurry)
+        logger.info("Focus score for %s: %.2f (blurry=%s)", image_path.name, focus_score, blurry)
 
         if blurry:
-            path.unlink() # Remove blurry images from working dataset
+            label_path = INTERIM_LABELS_DIR / f"{image_path.name}.txt"
+            image_path.unlink() # Remove blurry images from working dataset
+            logger.info("Removed blurry image: %s", image_path.name)
             removed_image_count += 1
-            logger.info("Removed blurry image: %s", path.name)
-
+            if label_path.exists():
+                label_path.unlink()
+                logger.info("Removed corresponding label: %s", label_path.name)
+            else:
+                logger.warning("No matching label file for: %s", image_path.stem)
 
     remaining_images_count = input_image_count - removed_image_count
 
