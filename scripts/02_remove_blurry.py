@@ -32,7 +32,7 @@ def compute_focus_score(gray_image: np.ndarray) -> float:
 
 
 # Filter out blurry images using the threshold value and remove blurry images from directory.
-def filter_blurry_images():
+def remove_blurry_images():
     grayscale_images = load_grayscale_images()
     input_image_count = len(grayscale_images)
     removed_image_count = 0
@@ -69,6 +69,6 @@ def filter_blurry_images():
     }
 
 if __name__ == "__main__":
-    stats = filter_blurry_images()
+    stats = remove_blurry_images()
     print(stats)
 

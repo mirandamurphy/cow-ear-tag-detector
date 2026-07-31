@@ -1,35 +1,44 @@
 import mlflow
-from mlflow.entities import experiment
-import pandas as pd
 import importlib
 import logging
 from utils.definitions import MLFLOW_TRACKING_URI, RAW_IMAGES_DIR, RAW_LABELS_DIR
 
-# Step 1
 remove_duplicates = importlib.import_module("01_remove_duplicates")
-# Step 2
 remove_blurry = importlib.import_module("02_remove_blurry")
-# Step 3
-calc_label_counts = importlib.import_module("03_calc_label_counts")
+split_dataset = importlib.import_module("03_split_dataset")
 
-logging = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
 
-
+def log_raw_dataset_stats():
+    num_images = sum(1 for file in RAW_IMAGES_DIR.iterdir() if file.is_file())
+    num_labels = sum(1 for file in RAW_LABELS_DIR.iterdir() if file.is_file())
+    return {"raw_images": num_images, "raw_labels": num_labels}
 
 def run_pipeline():
 
-    logging.info("Starting data preprocessing pipeline...")
+    logger.info("Starting data preprocessing pipeline...")
 
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment("cow-ear-tag-detector")
 
-    with mlflow.start_run(run_name="dataset-prep-v1"):
+    with mlflow.start_run(run_name="dataset-pipline-v1"):
+        with mlflow.start_run(run_name="remove_duplicates", nested=True):
+            stats = remove_duplicates.remove_duplicates()
+            mlflow.log_metrics(stats)
 
-        mlflow.log_artifacts(
-            str(RAW_IMAGES_DIR),
-            artifact_path="dataset/raw"
-        )
+            with mlflow.start_run(run_name="remove_blurry", nested=True):
+                stats = remove_blurry.remove_blurry_images()
+                mlflow.log_metrics(stats)
 
+            with mlflow.start_run(run_name="remove_blurry", nested=True):
+                stats = remove_blurry.remove_blurry_images()
+                mlflow.log_metrics(stats)
+
+            with mlflow.start_run(run_name="split_dataset", nested=True):
+                stats = split_dataset.split_dataset()
+                mlflow.log_metrics(stats)
+
+        logger.info("Pipeline complete.")
 
 
 
