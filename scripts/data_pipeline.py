@@ -1,15 +1,15 @@
 import mlflow
-import importlib
 import logging
+
 from utils.definitions import MLFLOW_TRACKING_URI, RAW_IMAGES_DIR, RAW_LABELS_DIR
 
-remove_duplicates = importlib.import_module("01_remove_duplicates")
-remove_blurry = importlib.import_module("02_remove_blurry")
-split_dataset = importlib.import_module("03_split_dataset")
+import step_01_remove_duplicates as remove_duplicates
+import step_02_remove_blurry as remove_blurry
+import step_03_split_dataset as split_dataset
 
 logger = logging.getLogger(__name__)
 
-def log_raw_dataset_stats():
+def log_raw_dataset_metadata():
     num_images = sum(1 for file in RAW_IMAGES_DIR.iterdir() if file.is_file())
     num_labels = sum(1 for file in RAW_LABELS_DIR.iterdir() if file.is_file())
     return {"raw_images": num_images, "raw_labels": num_labels}
@@ -18,29 +18,31 @@ def run_pipeline():
 
     logger.info("Starting data preprocessing pipeline...")
 
+    # Set up Mlflow experiment
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment("cow-ear-tag-detector")
 
     with mlflow.start_run(run_name="dataset-pipline-v1"):
+
+        # Log starting dataset metadata
+        mlflow.log_metrics(log_raw_dataset_metadata())
+
+        # Step 1: Remove duplicate/similar images
         with mlflow.start_run(run_name="remove_duplicates", nested=True):
-            stats = remove_duplicates.remove_duplicates()
-            mlflow.log_metrics(stats)
+            metadata = remove_duplicates.run()
+            mlflow.log_metrics(metadata)
 
-            with mlflow.start_run(run_name="remove_blurry", nested=True):
-                stats = remove_blurry.remove_blurry_images()
-                mlflow.log_metrics(stats)
+        with mlflow.start_run(run_name="remove_blurry", nested=True):
+            metadata = remove_blurry.run()
+            mlflow.log_metrics(metadata)
 
-            with mlflow.start_run(run_name="remove_blurry", nested=True):
-                stats = remove_blurry.remove_blurry_images()
-                mlflow.log_metrics(stats)
+        with mlflow.start_run(run_name="split_dataset", nested=True):
+            metadata = split_dataset.run()
+            mlflow.log_metrics(metadata)
 
-            with mlflow.start_run(run_name="split_dataset", nested=True):
-                stats = split_dataset.split_dataset()
-                mlflow.log_metrics(stats)
-
-        logger.info("Pipeline complete.")
-
+    logger.info("Data preprocessing pipeline has been completed.")
 
 
 if __name__ == "__main__":
+    log_raw_dataset_metadata()
     run_pipeline()

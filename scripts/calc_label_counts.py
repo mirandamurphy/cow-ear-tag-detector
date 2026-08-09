@@ -1,7 +1,10 @@
 import pandas as pd
+import logging
 
-from utils.definitions import INTERIM_LABELS_DIR
+from utils.definitions import INTERIM_LABELS_DIR, LOGS_DIR
 from utils.constants import CLASS_LABEL
+
+logger = logging.getLogger(__name__)
 
 def calc_num_labels_per_file():
     label_counts = {}
@@ -14,8 +17,14 @@ def calc_num_labels_per_file():
     return label_counts
 
 def save_label_counts_to_df():
+    logger.info("Calculating label counts per image.")
     label_counts = calc_num_labels_per_file()
     return pd.DataFrame(list(label_counts.items()), columns=['file', 'labels'])
+
+def save_df_to_csv(df):
+    csv_path = LOGS_DIR / "label_counts.csv"
+    df.to_csv(csv_path, index=False)
+    logger.info("Saved label counts to CSV (%s)", csv_path)
 
 
 if __name__ == "__main__":

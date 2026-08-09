@@ -1,5 +1,4 @@
 import cv2
-import numpy as np
 import logging
 
 from utils.definitions import INTERIM_IMAGES_DIR, INTERIM_LABELS_DIR
@@ -11,6 +10,7 @@ logger = logging.getLogger(__name__)
 def load_grayscale_images():
 
     grayscale_images = []
+
     for path in INTERIM_IMAGES_DIR.iterdir():
         if path.is_file():
             gray_image = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE) # cv2 expects string filename, not Path object
@@ -22,42 +22,47 @@ def load_grayscale_images():
     return grayscale_images
 
 
-def compute_focus_score(gray_image: np.ndarray) -> float:
+def compute_focus_score(gray_image):
     """Processes image with Sobel operators in the x and y directions.
     Then calculates the mean of the squared gradient magnitudes across the image
     to combine the resulting gradients with the Tenegrad measure."""
+
     g_x = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=3)
     g_y = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=3)
+
     return (g_x**2 + g_y**2).mean() # Sharp images tend to have higher gradient values
 
 
-# Filter out blurry images using the threshold value and remove blurry images from directory.
-def remove_blurry_images():
+
+def run():
+    logger.info("Beginning step 2, step_02_remove_blurry.py...")
     grayscale_images = load_grayscale_images()
     input_image_count = len(grayscale_images)
+
     removed_image_count = 0
 
-
     for image_path, gray_image in grayscale_images:
+
         focus_score = compute_focus_score(gray_image)
         blurry = focus_score < FOCUS_SCORE_THRESHOLD
+
         logger.info("Focus score for %s: %.2f (blurry=%s)", image_path.name, focus_score, blurry)
 
         if blurry:
-            label_path = INTERIM_LABELS_DIR / f"{image_path.name}.txt"
+            label_path = INTERIM_LABELS_DIR / f"{image_path.stem}.txt"
             image_path.unlink() # Remove blurry images from working dataset
-            logger.info("Removed blurry image: %s", image_path.name)
+            logger.info("Removed blurry image: %s", image_path.stem)
             removed_image_count += 1
             if label_path.exists():
                 label_path.unlink()
-                logger.info("Removed corresponding label: %s", label_path.name)
+                logger.info("Removed corresponding label: %s", label_path.stem)
             else:
                 logger.warning("No matching label file for: %s", image_path.stem)
 
     remaining_images_count = input_image_count - removed_image_count
 
     logger.info(
-        "02_blur_filter.py is is complete. input: %d, removed: %d, remaining: %d",
+        "step_02_blur_filter.py is is complete. input: %d, removed: %d, remaining: %d",
         input_image_count, removed_image_count, remaining_images_count
     )
 
@@ -69,6 +74,6 @@ def remove_blurry_images():
     }
 
 if __name__ == "__main__":
-    stats = remove_blurry_images()
-    print(stats)
+    metadata = run()
+    print(metadata)
 

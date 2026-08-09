@@ -60,12 +60,12 @@ def copy_unique_data(kept_images):
 
 
 
-def remove_duplicates():
-    logger.info("Beginning step 1, 01_remove_duplicates.py...")
+def run():
+    logger.info("Beginning step 1, step_01_remove_duplicates.py...")
     p_hashes = compute_perceptual_hashes()
     unique_images = find_unique_images(p_hashes)
     copy_unique_data(unique_images)
-    logger.info("01_remove_duplicates.py is complete")
+    logger.info("step_01_remove_duplicates.py is complete")
 
     # mlflow Metadata
     return {
@@ -76,8 +76,8 @@ def remove_duplicates():
 
 
 if __name__ == "__main__":
-    stats = remove_duplicates()
-    print(stats)
+    metadata = run()
+    print(metadata)
 
 
 

@@ -12,10 +12,12 @@ MODELS_DIR = ROOT_DIR / "models"
 NOTEBOOKS_DIR = ROOT_DIR / "notebooks"
 SCRIPTS_DIR = ROOT_DIR / "scripts"
 
+
 # MLflow
 MLFLOW_DB_PATH = ROOT_DIR / "mlflow.db"
 MLFLOW_TRACKING_URI = f"sqlite:///{MLFLOW_DB_PATH}"
 MLFLOW_ARTIFACTS_DIR = ROOT_DIR / "mlruns"
+
 
 # Raw dataset
 RAW_DATA_DIR = DATA_DIR / "raw"

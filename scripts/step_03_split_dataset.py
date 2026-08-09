@@ -1,5 +1,4 @@
 import logging
-import importlib
 import shutil
 
 from sklearn.model_selection import train_test_split
@@ -30,17 +29,18 @@ LABEL_SPLIT_DIRS = {
 
 logger = logging.getLogger(__name__)
 
-
 def move_split(df, split):
 
     image_output_dir = IMAGE_SPLIT_DIRS[split] # use key value (e.g., 'train')
     label_output_dir = LABEL_SPLIT_DIRS[split]
 
+    # Make directory if it does not exist
     image_output_dir.mkdir(exist_ok=True)
     label_output_dir.mkdir(exist_ok=True)
 
     logger.info("Starting to move files for %s split...", split)
 
+    # Using '_' because the DataFrame index is not needed
     for _, row in df.iterrows():
         image_input_path = INTERIM_IMAGES_DIR / f"{row['file']}.jpg"
         label_input_path = INTERIM_LABELS_DIR / f"{row['file']}.txt"
@@ -54,17 +54,18 @@ def move_split(df, split):
             continue
 
         shutil.copy2(image_input_path, image_output_dir / image_input_path.name)
-        logger.info("Image: %s copied to %s folder.", image_input_path.stem, split)
+        logger.info("Image: %s copied to %s folder.", image_input_path.name, split)
         shutil.copy2(label_input_path, label_output_dir / label_input_path.name)
-        logger.info("Label: %s copied to %s folder.", label_input_path.stem, split)
+        logger.info("Label: %s copied to %s folder.", label_input_path.name, split)
 
     logging.info("File move is complete for %s split", split)
 
 
 
-def split_dataset():
+def run():
 
     dataset_df = calc_label_counts.save_label_counts_to_df()
+    calc_label_counts.save_df_to_csv(dataset_df)
 
     logger.info("Starting dataset split...")
 
@@ -83,7 +84,7 @@ def split_dataset():
         random_state=42,
     )
 
-    logger.info("Dataset split is complete")
+    logger.info("Dataset split is complete.")
 
     move_split(train_df, "train")
     move_split(test_df, "test")
@@ -98,5 +99,5 @@ def split_dataset():
 
 
 if __name__ == "__main__":
-   stats = split_dataset()
-   print(stats)
+   metadata = run()
+   print(metadata)
