@@ -25,9 +25,8 @@ def run_pipeline():
     with mlflow.start_run(run_name="dataset-pipline-v1"):
 
         # Log starting dataset metadata
-        with mlflow.start_run("raw_dataset", nested=True):
-            metadata = log_raw_dataset_metadata()
-            mlflow.log_metrics(metadata)
+        metadata = log_raw_dataset_metadata()
+        mlflow.log_metrics(metadata)
 
         # Step 1: Remove duplicate/similar images
         with mlflow.start_run(run_name="remove_duplicates", nested=True):
