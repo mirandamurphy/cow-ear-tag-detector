@@ -6,7 +6,7 @@ from utils.definitions import LOGS_DIR, PIPELINE_LOG_PATH
 LOGS_DIR.mkdir(exist_ok=True)
 
 # Create logger
-logger = logging.getLogger("cow_ear_tag_detection")
+logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
 
 # Create formatter
