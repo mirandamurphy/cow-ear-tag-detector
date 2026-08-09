@@ -1,7 +1,10 @@
 import shutil
-import logging
 import imagehash
+
 from PIL import Image
+
+import logging
+
 from utils.definitions import RAW_IMAGES_DIR, RAW_LABELS_DIR, INTERIM_IMAGES_DIR, INTERIM_LABELS_DIR
 from utils.constants import P_HASH_THRESHOLD
 

@@ -2,6 +2,7 @@ import mlflow
 import logging
 
 from utils.definitions import MLFLOW_TRACKING_URI, RAW_IMAGES_DIR, RAW_LABELS_DIR
+from utils.logger_config import setup_logging
 
 import step_01_remove_duplicates as remove_duplicates
 import step_02_remove_blurry as remove_blurry
@@ -45,4 +46,5 @@ def run_pipeline():
 
 
 if __name__ == "__main__":
+    setup_logging()
     run_pipeline()
