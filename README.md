@@ -43,10 +43,14 @@ Source: [https://www.kaggle.com/datasets/fandaoerji/cow-eartag-detection-dataset
 - Ear tags annotated with bounding boxes for object detection.
 
 ### Dataset Preparation
-Prior to training, the dataset was reviewed and organized into separate training, validation, and test datasets.
-- Training set: images
-- Validation set: images
-- Test set:  images
+Prior to training, the dataset was organized into separate training, validation, and test datasets using a 70/15/15 split.
+
+| Dataset | # of images |
+|---------|-------------|
+| Train   | 1537        |
+| Val     | 329         |
+| Test    | 330         |
+
 
 ## Future Development
 Future work will expand beyond tag detection to include automated ear tag number recognition. By combining object detection with OCR, the system could support animal identification, tracking, and traceability record management through automatic extraction of tag information from images.
