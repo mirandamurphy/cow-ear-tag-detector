@@ -5,8 +5,8 @@ from sklearn.model_selection import train_test_split
 from scripts import calc_label_counts
 
 from utils.definitions import (
-    INTERIM_IMAGES_DIR,
-    INTERIM_LABELS_DIR,
+    PROCESSED_IMAGES_DIR,
+    PROCESSED_LABELS_DIR,
     TRAIN_IMAGES_DIR,
     VAL_IMAGES_DIR,
     TEST_IMAGES_DIR,
@@ -42,8 +42,8 @@ def move_split(df, split):
 
     # Using '_' because the DataFrame index is not needed
     for _, row in df.iterrows():
-        image_input_path = INTERIM_IMAGES_DIR / f"{row['file']}.jpg"
-        label_input_path = INTERIM_LABELS_DIR / f"{row['file']}.txt"
+        image_input_path = PROCESSED_IMAGES_DIR / f"{row['file']}.jpg"
+        label_input_path = PROCESSED_LABELS_DIR / f"{row['file']}.txt"
 
         if not image_input_path.exists():
             logger.warning("WARNING: Image %s not found, skipping.", image_input_path.stem)
@@ -64,10 +64,11 @@ def move_split(df, split):
 
 def run():
 
+
     dataset_df = calc_label_counts.save_label_counts_to_df()
     calc_label_counts.save_df_to_csv(dataset_df)
 
-    logger.info("Starting dataset split...")
+    logger.info("BEGINNING STEP 3: DATASET SPLIT...")
 
     # Split #1: 70% train and 30% test/val
     train_df, test_val_df = train_test_split(
@@ -84,19 +85,18 @@ def run():
         random_state=42,
     )
 
-    logger.info("Dataset split is complete.")
-
     move_split(train_df, "train")
     move_split(test_df, "test")
     move_split(val_df, "val")
+
+    logger.info("COMPLETE STEP 3: DATASET SPLIT. Train size: %d, Val size: %d, Test size: %d",
+                len(train_df), len(val_df), len(test_df))
 
     return {
         "train_size": len(train_df),
         "val_size": len(val_df),
         "test_size": len(test_df),
     }
-
-
 
 if __name__ == "__main__":
    metadata = run()

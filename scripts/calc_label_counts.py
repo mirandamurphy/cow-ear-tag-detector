@@ -1,7 +1,7 @@
 import pandas as pd
 import logging
 
-from utils.definitions import INTERIM_LABELS_DIR, LOGS_DIR
+from utils.definitions import PROCESSED_LABELS_DIR, LOGS_DIR
 from utils.constants import CLASS_LABEL
 
 logger = logging.getLogger(__name__)
@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def calc_num_labels_per_file():
     label_counts = {}
 
-    for file in INTERIM_LABELS_DIR.glob("*.txt"):
+    for file in PROCESSED_LABELS_DIR.glob("*.txt"):
         with open(file) as f:
             # Get first part of line and add count if it equals class label (i.e., '0')
             # An extra line.split() is added in case any files have trailing white spaces

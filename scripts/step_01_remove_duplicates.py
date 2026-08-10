@@ -5,7 +5,7 @@ from PIL import Image
 
 import logging
 
-from utils.definitions import RAW_IMAGES_DIR, RAW_LABELS_DIR, INTERIM_IMAGES_DIR, INTERIM_LABELS_DIR
+from utils.definitions import RAW_IMAGES_DIR, RAW_LABELS_DIR, PROCESSED_IMAGES_DIR, PROCESSED_LABELS_DIR
 from utils.constants import P_HASH_THRESHOLD
 
 logger = logging.getLogger(__name__)
@@ -36,7 +36,7 @@ def find_unique_images(image_hashes):
         ):
             kept_images.append(path)
             kept_hashes.append(p_hash)
-            logger.info("Keeping image: %s", path)
+            logger.info("Keeping image: %s", path.name)
     return kept_images
 
 
@@ -50,31 +50,40 @@ def copy_unique_data(kept_images):
     # Copy labels that have an image being kept
     for label_path in RAW_LABELS_DIR.glob("*.txt"):
         if label_path.stem in matched_stems:
-            shutil.copy2(label_path, INTERIM_LABELS_DIR)
-            logger.info("Moved label: %s", label_path.stem)
+            shutil.copy2(label_path, PROCESSED_LABELS_DIR)
+            logger.info("Moved label: %s", label_path.name)
+
+    copied_count = 0
 
     # Copy images that have a corresponding label
     for image_path in kept_images:
         if image_path.stem in matched_stems:
-            shutil.copy2(image_path, INTERIM_IMAGES_DIR)
-            logger.info("Saved image %s", image_path.stem)
+            shutil.copy2(image_path, PROCESSED_IMAGES_DIR)
+            copied_count += 1
+            logger.info("SAVED IMAGE: %s", image_path.name)
         else:
-            logger.warning("MISSING LABEL FILE: image [ %s ] is not being kept.", image_path.stem)
-
-
+            logger.warning("MISSING LABEL FILE: image [ %s ] is not being kept.", image_path.name)
+    return copied_count
 
 def run():
-    logger.info("Beginning step 1, step_01_remove_duplicates.py...")
+    logger.info("BEGINNING STEP 1: REMOVE DUPLICATES...")
     p_hashes = compute_perceptual_hashes()
     unique_images = find_unique_images(p_hashes)
-    copy_unique_data(unique_images)
-    logger.info("step_01_remove_duplicates.py is complete")
+    copied_count = copy_unique_data(unique_images)
+
+
+
+    logger.info(
+        "COMPLETED STEP 1: REMOVE DUPLICATES. input_images: %d, unique_images: %d, remaining_images: %d, duplicates removed %d, images_missing_labels: %d",
+        len(p_hashes), len(unique_images), copied_count, (len(p_hashes) - len(unique_images)), (len(unique_images) - copied_count))
 
     # mlflow Metadata
     return {
         "input_images": len(p_hashes),
-        "remaining_images": len(unique_images),
-        "duplicates_removed": len(p_hashes) - len(unique_images)
+        "unique_images": len(unique_images),
+        "remaining_images": copied_count,
+        "duplicates_removed": len(p_hashes) - len(unique_images),
+        "images_missing_labels": len(unique_images) - copied_count
     }
 
 

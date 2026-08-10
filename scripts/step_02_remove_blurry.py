@@ -1,7 +1,7 @@
 import cv2
 import logging
 
-from utils.definitions import INTERIM_IMAGES_DIR, INTERIM_LABELS_DIR
+from utils.definitions import PROCESSED_IMAGES_DIR, PROCESSED_LABELS_DIR
 from utils.constants import FOCUS_SCORE_THRESHOLD
 
 logger = logging.getLogger(__name__)
@@ -11,14 +11,14 @@ def load_grayscale_images():
 
     grayscale_images = []
 
-    for path in INTERIM_IMAGES_DIR.iterdir():
+    for path in PROCESSED_IMAGES_DIR.iterdir():
         if path.is_file():
             gray_image = cv2.imread(str(path), cv2.IMREAD_GRAYSCALE) # cv2 expects string filename, not Path object
             if gray_image is not None:
                 grayscale_images.append((path, gray_image))
                 logger.info("Loaded grayscale image: %s", path.name)
             else:
-                logger.warning("Failed to read image: %s", path.name)
+                logger.warning("WARNING: Failed to read image: %s", path.name)
     return grayscale_images
 
 
@@ -35,7 +35,8 @@ def compute_focus_score(gray_image):
 
 
 def run():
-    logger.info("Beginning step 2, step_02_remove_blurry.py...")
+    logger.info("BEGINNING STEP 2: REMOVE BLURRY...")
+
     grayscale_images = load_grayscale_images()
     input_image_count = len(grayscale_images)
 
@@ -49,28 +50,27 @@ def run():
         logger.info("Focus score for %s: %.2f (blurry=%s)", image_path.name, focus_score, blurry)
 
         if blurry:
-            label_path = INTERIM_LABELS_DIR / f"{image_path.stem}.txt"
+            label_path = PROCESSED_LABELS_DIR / f"{image_path.stem}.txt"
             image_path.unlink() # Remove blurry images from working dataset
             logger.info("Removed blurry image: %s", image_path.stem)
             removed_image_count += 1
             if label_path.exists():
                 label_path.unlink()
-                logger.info("Removed corresponding label: %s", label_path.stem)
+                logger.info("Removed corresponding label: %s", label_path.name)
             else:
-                logger.warning("No matching label file for: %s", image_path.stem)
+                logger.info("No matching label file for: %s, nothing removed.", image_path.name)
 
     remaining_images_count = input_image_count - removed_image_count
 
     logger.info(
-        "step_02_blur_filter.py is is complete. input: %d, removed: %d, remaining: %d",
+        "COMPLETED STEP 2: REMOVE BLURRY. input: %d, removed: %d, remaining: %d",
         input_image_count, removed_image_count, remaining_images_count
     )
 
     return {
         "input_images" : input_image_count,
         "remaining_images": remaining_images_count,
-        "blurry_images_removed": removed_image_count
-
+        "blurry_removed": removed_image_count
     }
 
 if __name__ == "__main__":
