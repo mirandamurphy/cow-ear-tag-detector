@@ -3,7 +3,6 @@ from utils.definitions import LOGS_DIR, PIPELINE_LOG_PATH
 
 
 def setup_logging():
-    # Create logs directory if it does not exist
     LOGS_DIR.mkdir(exist_ok=True)
 
     # Create logger

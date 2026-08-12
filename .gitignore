@@ -278,6 +278,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
-!/scripts/
+# Local MLflow
+mlflow.db
 
+/app/app.py
+
+
+
+!/notebooks/
 
