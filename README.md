@@ -17,31 +17,6 @@ Object detection is required to meet the project's goals:
 - Precisely localizes ear tags using bounding box coordinates  
 - Makes it easy to visualize and validate results
 - Allows cropping of detected regions for future OCR of ID numbers in future development
-
-### Results
-
-| Metric             | Value |
-|--------------------|-------|
-| mAP50              | 0.915 |
-| mAP50-95           | 0.403 |
-| Precision          | 0.892 |
-| Recall             | 0.865 |
-| Inference (ms/img) | 6.7ms |
-
-### Dataset
-This project uses the [CEID-D dataset](https://www.kaggle.com/datasets/fandaoerji/cow-eartag-detection-dataset/data), a publicly available dataset on Kaggle. The dataset contains images of dairy cattle captured under a wide range of real-world conditions, on a dairy farm in China. 
-
-This repository does not redistribute CEID-D images or original annotations.
-
-Prior to training, the dataset was pre-processed by running the `preprocess.py` script. This ran some pre-processing steps and organized the dataset into separate training, validation, and test datasets using a 70/15/15 split.
-
-| Split | # of images |
-|-------|-------------|
-| Train | 1537        |
-| Val   | 329         |
-| Test  | 330         |
-
-
 ## Project Structure 
 
 ```
@@ -78,6 +53,29 @@ cow-ear-tag-detector
 
 ```
 
+### Dataset
+This project uses the [CEID-D dataset](https://www.kaggle.com/datasets/fandaoerji/cow-eartag-detection-dataset/data), a publicly available dataset on Kaggle. The dataset contains images of dairy cattle captured under a wide range of real-world conditions, on a dairy farm in China. 
+
+This repository does not redistribute CEID-D images or original annotations.
+
+Prior to training, the dataset was pre-processed by running the `preprocess.py` script. This ran some pre-processing steps and organized the dataset into separate training, validation, and test datasets using a 70/15/15 split.
+
+| Split | # of images |
+|-------|-------------|
+| Train | 1537        |
+| Val   | 329         |
+| Test  | 330         |
+
+### Results
+
+| Metric             | Value |
+|--------------------|-------|
+| mAP50              | 0.915 |
+| mAP50-95           | 0.403 |
+| Precision          | 0.892 |
+| Recall             | 0.865 |
+| Inference (ms/img) | 6.7ms |
+
 ### Limitations 
 - Ear tag sizes vary globally; the model trained only on Chinese cow images may not generalize elsewhere.
 - Mostly black and white Holsteins; breed diversity underrepresented. 
@@ -93,3 +91,38 @@ cow-ear-tag-detector
 
 ### License
 AGPL-3.0
+
+### Acknowledgements
+
+Base model (Ultralytics YOLO26):
+```
+Ultralytics YOLO26n (Base Model)
+@misc{jocher2026ultralyticsyolo26unifiedrealtime,
+  title = {Ultralytics YOLO26: Unified Real-Time End-to-End Vision Models},
+  author = {Glenn Jocher and Jing Qiu and Mengyu Liu and Shuai Lyu and Fatih Cagatay Akyon and Muhammet Esat Kalfaoglu},
+  year = {2026},
+  eprint = {2606.03748},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CV},
+  doi = {10.48550/arXiv.2606.03748},
+  url = {https://arxiv.org/abs/2606.03748},
+}
+```
+CEID-D Dataset:
+```
+@Article{s24072194,
+AUTHOR = {Gao, Tianhong and Fan, Daoerji and Wu, Huijuan and Chen, Xiangzhong and Song, Shihao and Sun, Yuxin and Tian, Jia},
+TITLE = {Research on the Vision-Based Dairy Cow Ear Tag Recognition Method},
+JOURNAL = {Sensors},
+VOLUME = {24},
+YEAR = {2024},
+NUMBER = {7},
+ARTICLE-NUMBER = {2194},
+URL = {https://www.mdpi.com/1424-8220/24/7/2194},
+PubMedID = {38610405},
+ISSN = {1424-8220},
+DOI = {10.3390/s24072194}
+}
+```
+
+
