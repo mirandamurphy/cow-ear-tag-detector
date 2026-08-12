@@ -4,41 +4,6 @@ Fine-tuned YOLO26n model that detects ear tags on dairy cows, developed as a pro
 
 **Trained Model (on Hugging Face):** [Cow Ear Tag Detector YOLO26n](https://huggingface.co/mirandamurphy/cow-ear-tag-detector-yolo26n)
 
-## Project Structure 
-
-```
-cow-ear-tag-detector
-├── datasets                                
-│   └── yolo
-│       ├── images
-│       │   ├── train
-│       │   ├── test
-│       │   └── val
-│       ├── labels
-│       │   ├── train
-│       │   ├── test
-│       │   └── val
-│       └── data.yaml
-├── models
-│   └── cow_ear_tag_detector_yolo26n.pt
-├── notebooks
-│   ├── 01_train_yolo26n.ipynb
-│   └── 02_test_yolo26n.ipynb
-├── scripts
-│   ├── calc_label_counts.py
-│   ├── preprocess.py
-│   ├── step01_remove_duplicates.py
-│   ├── step_02_remove_blurry.py
-│   └── step_03_split_dataset.py
-├── utils
-│   ├── constants.py
-│   ├── definitions.py
-│   └── logger_config.py
-├── LICENSE
-└── README.md
-
-
-```
 ## Overview
 Canada's DairyTrace program requires every female dairy cow to be identified with both a visual and RFID tag for life.
 Tags can fall off for many reasons, including, environmental factors (e.g., cows rubbing against objects) or weather-related damage. 
@@ -76,6 +41,42 @@ Prior to training, the dataset was pre-processed by running the `preprocess.py` 
 | Val   | 329         |
 | Test  | 330         |
 
+
+## Project Structure 
+
+```
+cow-ear-tag-detector
+├── datasets                                
+│   └── yolo
+│       ├── images
+│       │   ├── train
+│       │   ├── test
+│       │   └── val
+│       ├── labels
+│       │   ├── train
+│       │   ├── test
+│       │   └── val
+│       └── data.yaml
+├── models
+│   └── cow_ear_tag_detector_yolo26n.pt
+├── notebooks
+│   ├── 01_train_yolo26n.ipynb
+│   └── 02_test_yolo26n.ipynb
+├── scripts
+│   ├── calc_label_counts.py
+│   ├── preprocess.py
+│   ├── step01_remove_duplicates.py
+│   ├── step_02_remove_blurry.py
+│   └── step_03_split_dataset.py
+├── utils
+│   ├── constants.py
+│   ├── definitions.py
+│   └── logger_config.py
+├── LICENSE
+└── README.md
+
+
+```
 
 ### Limitations 
 - Ear tag sizes vary globally; the model trained only on Chinese cow images may not generalize elsewhere.
