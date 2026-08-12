@@ -1,7 +1,0 @@
-path: yolo
-train: images/train
-val: images/val
-test: images/test
-
-names:
-  0: ear_tag
