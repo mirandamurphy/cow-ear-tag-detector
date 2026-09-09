@@ -2,8 +2,6 @@
 
 Fine-tuned YOLO26n model that detects ear tags on dairy cows, developed as a proof-of-concept for automated missing tag detection on farms.
 
-**Trained Model (on Hugging Face):** [Cow Ear Tag Detector YOLO26n](https://huggingface.co/mirandamurphy/cow-ear-tag-detector-yolo26n)
-
 ## Overview
 Canada's DairyTrace program requires every female dairy cow to be identified with both a visual and RFID tag for life.
 Tags can fall off for many reasons, including, environmental factors (e.g., cows rubbing against objects) or weather-related damage. 
